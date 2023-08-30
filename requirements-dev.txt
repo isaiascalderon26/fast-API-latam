@@ -1,2 +1,4 @@
 matplotlib~=3.7.2
 seaborn~=0.12.2
+fastapi>=0.68.0,<0.87.0
+uvicorn==0.15.0
