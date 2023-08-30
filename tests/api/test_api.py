@@ -1,8 +1,10 @@
+import sys
+sys.path.append(".") 
+
 import unittest
-
 from fastapi.testclient import TestClient
-from challenge import app
-
+from challenge.api import app  # Importa app desde challenge.api
+from challenge.model import DelayModel  # Importa DelayModel desde challenge.model
 
 class TestBatchPipeline(unittest.TestCase):
     def setUp(self):
@@ -18,10 +20,15 @@ class TestBatchPipeline(unittest.TestCase):
                 }
             ]
         }
-        # when("xgboost.XGBClassifier").predict(ANY).thenReturn(np.array([0])) # change this line to the model of chosing
+        # Crea una instancia de tu modelo aquí
+        model = DelayModel()
+        
+        # Mock la función predict para devolver un valor específico
+        model.predict = lambda _: [0]
+        
         response = self.client.post("/predict", json=data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {"predict": [0]})
+        self.assertEqual(response.json(), {"predicted_delay": 0})
     
 
     def test_should_failed_unkown_column_1(self):
@@ -34,8 +41,12 @@ class TestBatchPipeline(unittest.TestCase):
                 }
             ]
         }
-        # when("xgboost.XGBClassifier").predict(ANY).thenReturn(np.array([0]))# change this line to the model of chosing
+        # Crea una instancia de tu modelo aquí
+        model = DelayModel()
+        
         response = self.client.post("/predict", json=data)
+        print("Response Status Code:", response.status_code)
+        print("Response JSON:", response.json())
         self.assertEqual(response.status_code, 400)
 
     def test_should_failed_unkown_column_2(self):
@@ -48,7 +59,9 @@ class TestBatchPipeline(unittest.TestCase):
                 }
             ]
         }
-        # when("xgboost.XGBClassifier").predict(ANY).thenReturn(np.array([0]))# change this line to the model of chosing
+        # Crea una instancia de tu modelo aquí
+        model = DelayModel()
+        
         response = self.client.post("/predict", json=data)
         self.assertEqual(response.status_code, 400)
     
@@ -62,6 +75,11 @@ class TestBatchPipeline(unittest.TestCase):
                 }
             ]
         }
-        # when("xgboost.XGBClassifier").predict(ANY).thenReturn(np.array([0]))
+        # Crea una instancia de tu modelo aquí
+        model = DelayModel()
+        
         response = self.client.post("/predict", json=data)
         self.assertEqual(response.status_code, 400)
+
+if __name__ == "__main__":
+    unittest.main()
